@@ -69,7 +69,7 @@ $(document).ready(() =>{
                     </li>`
                    
        result.append(html)
-       meters = 0; seconds = 0;
+       meters = 0; seconds = 0.0;
        second.text(seconds);
        meter.text(meters);
    }
