@@ -3,28 +3,28 @@ $(document).ready(() =>{
     var seconds = 0;
     var meters = 0;
     var timer = {};
+    var results = [];
     var soundspeed = 343;
 
     var button = $('#start');
     var second = $('#second');
     var meter = $('#meter');
     var result = $('#result');
+    var result_sorted = $('#result-sorted');
 
     var state = {
         started: 'STARTED',
         stopped: 'STOPPED'
     }
 
-
     var currentState = state.stopped
     
     button.click(()=> currentState == state.stopped ? start() : stop());
-    
-
 
    function start(){
        currentState = state.started
        updateButton()
+       resetLabel()
 
        timer = setInterval(() => {
            seconds += 0.1
@@ -32,8 +32,6 @@ $(document).ready(() =>{
            second.text(precision(seconds, 1))
            meter.text(precision(meters, 1))
        }, 100);
-       
-       console.log(currentState)
    }
 
    function stop(){
@@ -41,7 +39,6 @@ $(document).ready(() =>{
        updateButton()
        clearInterval(timer);
        updateResult();
-       console.log(currentState)
    }
 
    function updateButton(){
@@ -50,33 +47,57 @@ $(document).ready(() =>{
        if(currentState == state.stopped){
             button.text("BAŞLAT")
             button.removeClass("btn-danger");
-            button.addClass("btn-success");
+            button.addClass("btn-outline-success");
         }else{
             button.text("DURDUR")
             button.addClass("btn-danger");
-            button.removeClass("btn-success");
+            button.removeClass("btn-outline-success");
         } 
    }
 
+   function resetLabel() {
+    meters = 0; seconds = 0.0;
+    second.text(seconds);
+    meter.text(meters);   
+   }
+
    function updateResult(){
-        var time = new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds();
-        var html = `<li class="list-group-item d-flex justify-content-between align-items-start">
-                        <div class="ms-2 me-auto">
-                            <div class="fw-bold">${precision(meters, 1)} meters</div>
-                            ${precision(seconds, 1)} seconds
-                            </div>
-                        <span class="badge bg-primary rounded-pill">${time}</span>
-                    </li>`
+        
+        results.push({seconds: precision(seconds, 1), meters: precision(meters, 1), time: getTime(), id: results.length});
+
+        result_sorted.html(``)
+        result.html(``)
+
+        var temp_sorted = results.slice();
+        temp_sorted.sort((a, b) => { return b.meters - a.meters})
+        var winner = temp_sorted[0];
+
+        results.forEach(element => {
+            var html = `<li class="list-group-item d-flex justify-content-between align-items-start${winner.id==element.id ? " list-group-item-warning": ""}">
+            <div class="ms-2 me-auto">
+            <div class="fw-bold">${element.meters} meters</div>
+            ${element.seconds} seconds
+            </div>
+            <span class="badge bg-primary rounded-pill">${element.time}</span>
+            </li>`
+            result.prepend(html)
+        })
+        
+        temp_sorted.forEach(element => {
+            
+            var html = `<li class="list-group-item d-flex justify-content-between align-items-start${winner.id==element.id ? " list-group-item-warning": ""}">
+            <div class="ms-2 me-auto">
+            <div class="fw-bold">${element.meters} meters</div>
+            ${element.seconds} seconds
+            </div>
+            <span class="badge bg-primary rounded-pill">${element.time}</span>
+            </li>`
+            result_sorted.append(html)
+        });
                    
-       result.append(html)
-       meters = 0; seconds = 0.0;
-       second.text(seconds);
-       meter.text(meters);
    }
 
    function precision(number, count){
-        console.log(number);
-
         var numberToString = number.toString();
 
         var splitted = numberToString.split('.');
@@ -91,8 +112,14 @@ $(document).ready(() =>{
        
         numberToString = leftSide + "." + rightSide;
 
-        console.log(numberToString);
-
         return numberToString
    } 
+
+    function getTime() {
+        var date = new Date();
+        var hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        var minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        var seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+        return `${hours}:${minutes}:${seconds}`
+    }
 })
