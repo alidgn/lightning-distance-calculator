@@ -1,5 +1,6 @@
 $(document).ready(() =>{
 
+    var tutorial = 0;
     var seconds = 0;
     var meters = 0;
     var timer = {};
@@ -11,7 +12,8 @@ $(document).ready(() =>{
     var meter = $('#meter');
     var result = $('#result');
     var result_sorted = $('#result-sorted');
-
+    $('.collapseSelector').click(() => { tutorial = 2} );
+    
     var state = {
         started: 'STARTED',
         stopped: 'STOPPED'
@@ -36,9 +38,30 @@ $(document).ready(() =>{
 
    function stop(){
        currentState = state.stopped
-       updateButton()
+       updateButton();
        clearInterval(timer);
        updateResult();
+
+       showTutorial();
+   }
+
+   function showTutorial(){
+    if(tutorial < 2){
+        setTimeout(() => { 
+            $('#resultCollapse').collapse('toggle'); 
+            $('#resultSortedCollapse').collapse('toggle'); 
+        }, 700);
+        
+        setTimeout(() => { 
+            $('#resultCollapse').collapse('toggle'); 
+            $('#resultSortedCollapse').collapse('toggle'); 
+        }, 1150);
+    }else{
+        tutorial = 2
+    }
+
+    tutorial += 1;
+
    }
 
    function updateButton(){
