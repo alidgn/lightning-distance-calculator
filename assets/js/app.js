@@ -68,11 +68,11 @@ $(document).ready(() =>{
        if(button.hasClass("btn-primary")) button.removeClass("btn-primary")
 
        if(currentState == state.stopped){
-            button.text("BAŞLAT")
+            button.text("START")
             button.removeClass("btn-danger");
             button.addClass("btn-outline-success");
         }else{
-            button.text("DURDUR")
+            button.text("STOP")
             button.addClass("btn-danger");
             button.removeClass("btn-outline-success");
         } 
